@@ -1,8 +1,74 @@
-# eck-api-key-manager
-Declarative management of Elasticsearch API Keys in Kubernetes. Automatically create secrets containing automatically-rotating API Keys.
+# [Work in Progress!] eck-api-key-manager
+CRDs and operator supporting declarative management of Elasticsearch API Keys in Kubernetes, specifically targeting clusters deployed with ECK. Secrets are created and managed in response to `ElasticsearchApiKey` resources in Kubernetes, much like how `cert-manager` exposes certificates.
 
-## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
+## Disclaimer
+I've wanted something like this for a while, so I decided to be the change I wanted to see in the world. That said, this is my first operator, and worse, I entered without having ever really even touched Go before.
+
+I also don't have it running in production anywhere yet, so my tests have been very minimal.
+
+## Gotchas
+* Remember that environment variables don't automatically update when an underlying secret value changes. This operator will not do anything to restart your pod or reset your connection with Elasticsearch. Either make sure your pods will restart after renewal and before expiration, or mount the secret as a volume and write a file watcher to monitor it for changes.
+* Updates to role definitions, metadata, and duration do not cause the API Key to be updated. These values _will_ be reflected after the key expires and regenerates, but you might want to delete and recreate the resource if you need it earlier.
+
+## TODO
+* Actually test this
+* Helm
+* Code cleanup
+* Learn Go, I guess?
+* Docs
+* Support resource updates
+
+
+## Examples
+Example resource:
+
+```
+apiVersion: eck.haugenapplications.com/v1beta1
+kind: ElasticsearchApiKey
+metadata:
+  name: elasticsearchapikey-sample
+spec:
+  duration: 10m
+  renewBefore: 5m
+
+  elasticsearch:
+    eck:
+      name: quickstart
+      namespace: es-cluster
+
+  secretName: my-api-key
+
+  roleDescriptors:
+    viewer: 
+      cluster:
+      - "all"
+      indices: []
+
+```
+
+Creates secret like:
+
+```
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    api_key: S3BvTFhjV1pUZUNzREtndVNLcDVfZw==
+    encoded: TFVWMlRVNDBkMEp1U0ZBME1tNVFUa1UzUlhZNlMzQnZURmhqVjFwVVpVTnpSRXRuZFZOTGNEVmZadz09
+    id: LUV2TU40d0JuSFA0Mm5QTkU3RXY=
+  kind: Secret
+  metadata:
+    creationTimestamp: "2023-12-05T02:26:10Z"
+    name: my-api-key
+    namespace: default
+    resourceVersion: "31548"
+    uid: 9ed12253-2d27-4b49-a398-67a8fca5e7ce
+  type: Opaque
+kind: List
+metadata:
+  resourceVersion: ""
+```
+
 
 ## Getting Started
 
