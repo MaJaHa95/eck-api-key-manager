@@ -1,0 +1,222 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.13.0
+  name: elasticsearchapikeys.eck.haugenapplications.com
+spec:
+  group: eck.haugenapplications.com
+  names:
+    kind: ElasticsearchApiKey
+    listKind: ElasticsearchApiKeyList
+    plural: elasticsearchapikeys
+    singular: elasticsearchapikey
+  scope: Namespaced
+  versions:
+  - name: v1beta1
+    schema:
+      openAPIV3Schema:
+        description: ElasticsearchApiKey is the Schema for the elasticsearchapikeys
+          API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ElasticsearchApiKeySpec defines the desired state of ElasticsearchApiKey
+            properties:
+              apiKeyName:
+                type: string
+              duration:
+                type: string
+              elasticsearch:
+                properties:
+                  eck:
+                    properties:
+                      name:
+                        type: string
+                      namespace:
+                        type: string
+                    required:
+                    - name
+                    - namespace
+                    type: object
+                required:
+                - eck
+                type: object
+              metadata:
+                additionalProperties:
+                  description: RawMessage is a raw encoded JSON value. It implements
+                    Marshaler and Unmarshaler and can be used to delay JSON decoding
+                    or precompute a JSON encoding.
+                  format: byte
+                  type: string
+                description: "Metadata type alias. \n https://github.com/elastic/elasticsearch-specification/blob/ac9c431ec04149d9048f2b8f9731e3c2f7f38754/specification/_types/common.ts#L93-L93"
+                type: object
+              renewBefore:
+                type: string
+              roleDescriptors:
+                additionalProperties:
+                  properties:
+                    applications:
+                      description: Applications A list of application privilege entries
+                      items:
+                        properties:
+                          application:
+                            description: Application The name of the application to
+                              which this entry applies.
+                            type: string
+                          privileges:
+                            description: Privileges A list of strings, where each
+                              element is the name of an application privilege or action.
+                            items:
+                              type: string
+                            type: array
+                          resources:
+                            description: Resources A list resources to which the privileges
+                              are applied.
+                            items:
+                              type: string
+                            type: array
+                        required:
+                        - application
+                        - privileges
+                        - resources
+                        type: object
+                      type: array
+                    cluster:
+                      description: Cluster A list of cluster privileges. These privileges
+                        define the cluster level actions that API keys are able to
+                        execute.
+                      items:
+                        type: string
+                      type: array
+                    global:
+                      description: Global An object defining global privileges. A
+                        global privilege is a form of cluster privilege that is request-aware.
+                        Support for global privileges is currently limited to the
+                        management of application privileges.
+                      items:
+                        properties:
+                          application:
+                            properties:
+                              manage:
+                                properties:
+                                  applications:
+                                    items:
+                                      type: string
+                                    type: array
+                                required:
+                                - applications
+                                type: object
+                            required:
+                            - manage
+                            type: object
+                        required:
+                        - application
+                        type: object
+                      type: array
+                    indices:
+                      description: Indices A list of indices permissions entries.
+                      items:
+                        properties:
+                          allow_restricted_indices:
+                            type: boolean
+                          field_security:
+                            properties:
+                              except:
+                                items:
+                                  type: string
+                                type: array
+                              grant:
+                                items:
+                                  type: string
+                                type: array
+                            type: object
+                          names:
+                            items:
+                              type: string
+                            type: array
+                          privileges:
+                            items:
+                              properties:
+                                name:
+                                  type: string
+                              required:
+                              - name
+                              type: object
+                            type: array
+                          query:
+                            description: "This should support any of these, but we
+                              don't \n string Query RoleTemplateQuery"
+                            type: string
+                        required:
+                        - names
+                        - privileges
+                        type: object
+                      type: array
+                    metadata:
+                      additionalProperties:
+                        description: RawMessage is a raw encoded JSON value. It implements
+                          Marshaler and Unmarshaler and can be used to delay JSON
+                          decoding or precompute a JSON encoding.
+                        format: byte
+                        type: string
+                      description: Metadata Optional meta-data. Within the metadata
+                        object, keys that begin with `_` are reserved for system usage.
+                      type: object
+                    run_as:
+                      description: RunAs A list of users that the API keys can impersonate.
+                      items:
+                        type: string
+                      type: array
+                    transient_metadata:
+                      properties:
+                        enabled:
+                          type: boolean
+                      required:
+                      - enabled
+                      type: object
+                  type: object
+                type: object
+              secretName:
+                type: string
+            required:
+            - elasticsearch
+            - roleDescriptors
+            - secretName
+            type: object
+          status:
+            description: ElasticsearchApiKeyStatus defines the observed state of ElasticsearchApiKey
+            properties:
+              apiKeyId:
+                type: string
+              nextApiKeyId:
+                type: string
+              notAfter:
+                format: date-time
+                type: string
+              renewalTime:
+                format: date-time
+                type: string
+              status:
+                description: Type of the condition, known values are (`Ready`, `Failed`).
+                type: string
+            required:
+            - status
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

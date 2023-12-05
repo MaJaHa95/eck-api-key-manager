@@ -1,0 +1,4 @@
+## Append samples of your project ##
+resources:
+- haugenapplications.com_v1beta1_elasticsearchapikey.yaml
+#+kubebuilder:scaffold:manifestskustomizesamples

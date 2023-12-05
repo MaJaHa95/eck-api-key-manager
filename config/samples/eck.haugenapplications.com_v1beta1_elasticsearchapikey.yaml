@@ -1,0 +1,26 @@
+apiVersion: eck.haugenapplications.com/v1beta1
+kind: ElasticsearchApiKey
+metadata:
+  labels:
+    app.kubernetes.io/name: elasticsearchapikey
+    app.kubernetes.io/instance: elasticsearchapikey-sample
+    app.kubernetes.io/part-of: eck-api-key-manager
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: eck-api-key-manager
+  name: elasticsearchapikey-sample
+spec:
+  duration: 10m
+  renewBefore: 5m
+
+  elasticsearch:
+    eck:
+      name: quickstart
+      namespace: es-cluster
+
+  secretName: my-api-key
+
+  roleDescriptors:
+    viewer: 
+      cluster:
+      - "all"
+      indices: []

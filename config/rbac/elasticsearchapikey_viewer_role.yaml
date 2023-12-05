@@ -1,0 +1,27 @@
+# permissions for end users to view elasticsearchapikeys.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: elasticsearchapikey-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: eck-api-key-manager
+    app.kubernetes.io/part-of: eck-api-key-manager
+    app.kubernetes.io/managed-by: kustomize
+  name: elasticsearchapikey-viewer-role
+rules:
+- apiGroups:
+  - eck.haugenapplications.com
+  resources:
+  - elasticsearchapikeys
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - eck.haugenapplications.com
+  resources:
+  - elasticsearchapikeys/status
+  verbs:
+  - get
